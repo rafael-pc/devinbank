@@ -16,6 +16,10 @@ class Program
         List<Transacoes> saqueContaPoupanca = new();
         List<Transacoes> saqueContaInvestimento = new();
 
+        List<Transacoes> transfereciaContaCorrente = new();
+        List<Transacoes> transfereciaContaPoupanca = new();
+        List<Transacoes> transfereciaContaInvestimento = new();
+
         int numConta = 1234567890;
 
         try
@@ -23,7 +27,7 @@ class Program
             while (true)
             {
                 Console.WriteLine("Devinbank\n");
-                Console.Write("1. Cadastrar Conta\n2. Saldo\n3. Deposito\n4. Saque\n5. Simular Juros Compostos\n6. Listar Contas\n7. Extrato\n8. Finalizar\n\nSelecione uma opção: ");
+                Console.Write("1. Cadastrar Conta\n2. Saldo\n3. Deposito\n4. Saque\n5. Simular Juros Compostos\n6. Listar Contas\n7. Extrato\n8. Transferencia\n9. Finalizar\n\nSelecione uma opção: ");
                 string opcao = Console.ReadLine();
 
                 if (opcao == "1")
@@ -110,7 +114,7 @@ class Program
                         if (i.name == name)
                         {
                             Console.Write("\nConta Corrente: ");
-                            Console.WriteLine("\nConta: {0}\nSaldo: {1}", i.numConta ,i.saldo);
+                            Console.WriteLine("\nConta: {0}\nSaldo: {1}", i.numConta, i.saldo);
                         }
                     }
                     foreach (var i in contaPoupanca)
@@ -246,7 +250,7 @@ class Program
                         {
                             Console.Write("Valor à sacar: ");
                             double transacao = double.Parse(Console.ReadLine());
-                            bool ok = contaCorrente[index].Sacar(transacao);                      
+                            bool ok = contaCorrente[index].Sacar(transacao);
                             if (ok)
                             {
                                 string nome = contaCorrente[index].name;
@@ -449,9 +453,389 @@ class Program
                             Console.WriteLine("\nSaque: {0}\nData: {1}", saqueContaInvestimento[i].transacao, saqueContaInvestimento[i].dataTransacao);
                         }
                     }
+
+                    for (int i = 0; i < transfereciaContaCorrente.Count; i++)
+                    {
+                        if (transfereciaContaCorrente[i].name == name)
+                        {
+                            Console.WriteLine("\n----------------------------------");
+                            Console.Write("\nConta Corrente: ");
+                            Console.WriteLine("\nTransferencia: {0}\nData: {1}", transfereciaContaCorrente[i].transacao, transfereciaContaCorrente[i].dataTransacao);
+                        }
+                    }
                     Console.ReadLine();
                 }
+
                 else if (opcao == "8")
+                {
+                    Console.WriteLine("\n----------------------------------");
+                    Console.Write("\n1. Transferencia Conta Corrente\n2. Transferencia Conta Poupanca\n3. Transferencia Conta Investimento\n\nSelecione uma opção: ");
+                    string sel = Console.ReadLine();
+                    if (sel == "1")
+                    {
+                        Console.WriteLine("\n----------------------------------");
+                        Console.Write("\nInsira nome: ");
+                        string name = Console.ReadLine(), nomeAtual = null;
+                        int index = -1;
+                        for (int i = 0; i < contaCorrente.Count; i++)
+                        {
+                            if (contaCorrente[i].name == name)
+                            {
+                                nomeAtual = name;
+                                index = i;
+                            }
+                        }
+                        if (index != -1)
+                        {
+                            Console.Write("Valor à transferir: ");
+                            double transferencia = double.Parse(Console.ReadLine());
+                            bool ok = contaCorrente[index].Sacar(transferencia);
+                            if (ok)
+                            {
+                                string nome = contaCorrente[index].name;
+                                DateTime data = DateTime.Now;
+                                data.ToShortDateString();
+                                transfereciaContaCorrente.Add(new Transacoes(nome, transferencia, data));
+                                if (contaCorrente[index].saldo == 0)
+                                {
+                                    contaCorrente[index] = null;
+                                    Console.WriteLine("\nConta fechada");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("\n----------------------------------");
+                                    Console.Write("\n1. Transferencia para Conta Corrente\n2. Transferencia para Conta Poupanca\n3. Transferencia para Conta Investimento\n\nSelecione uma opção: ");
+                                    string se = Console.ReadLine();
+                                    if (se == "1")
+                                    {
+                                        Console.WriteLine("\n----------------------------------");
+                                        Console.Write("\nInsira nome: ");
+                                        string destinatario = Console.ReadLine(), nomeDestinatario = null;
+                                        int indexDestinatario = -1;
+                                        for (int i = 0; i < contaCorrente.Count; i++)
+                                        {
+                                            if (contaCorrente[i].name == name)
+                                            {
+                                                Console.WriteLine("\nTransferencia invalida");
+                                            }
+                                            else if (contaCorrente[i].name == destinatario)
+                                            {
+                                                nomeDestinatario = destinatario;
+                                                indexDestinatario = i;
+                                            }
+                                        }
+                                        if (index != -1)
+                                        {
+                                            contaCorrente[indexDestinatario].Depositar(transferencia);                   
+                                            Console.WriteLine("\nValor transferido com sucesso");
+                                        }
+                                        else { Console.WriteLine("\nConta não encontrada"); }
+                                        Console.ReadLine();
+                                    }
+                                    else if (se == "2")
+                                    {
+                                        Console.WriteLine("\n----------------------------------");
+                                        Console.Write("\nInsira nome: ");
+                                        string destinatario = Console.ReadLine(), nomeDestinatario = null;
+                                        int indexDestinatario = -1;
+                                        for (int i = 0; i < contaPoupanca.Count; i++)
+                                        {
+                                            if (contaPoupanca[i].name == name)
+                                            {
+                                                Console.WriteLine("\nTransferencia invalida");
+                                            }
+                                            else if (contaPoupanca[i].name == destinatario)
+                                            {
+                                                nomeDestinatario = destinatario;
+                                                indexDestinatario = i;
+                                            }
+                                        }
+                                        if (index != -1)
+                                        {
+                                            contaPoupanca[indexDestinatario].Depositar(transferencia);
+                                            Console.WriteLine("\nValor transferido com sucesso");
+                                        }
+                                        else { Console.WriteLine("\nConta não encontrada"); }
+                                        Console.ReadLine();
+                                    }
+                                    else if (se == "3")
+                                    {
+                                        Console.WriteLine("\n----------------------------------");
+                                        Console.Write("\nInsira nome: ");
+                                        string destinatario = Console.ReadLine(), nomeDestinatario = null;
+                                        int indexDestinatario = -1;
+                                        for (int i = 0; i < contaInvestimento.Count; i++)
+                                        {
+                                            if (contaInvestimento[i].name == name)
+                                            {
+                                                Console.WriteLine("\nTransferencia invalida");
+                                            }
+                                            else if (contaInvestimento[i].name == destinatario)
+                                            {                                              
+                                                nomeDestinatario = destinatario;
+                                                indexDestinatario = i;
+                                            }
+                                        }
+
+                                        if (index != -1)
+                                        {
+                                            contaInvestimento[indexDestinatario].Depositar(transferencia);          
+                                            Console.WriteLine("\nValor transferido com sucesso");
+                                        }
+                                        else { Console.WriteLine("\nConta não encontrada"); }
+                                        Console.ReadLine();
+                                    }
+                                }
+                            }
+                            else { Console.WriteLine("\nSaldo insuficiente"); }
+                        }
+                        else { Console.WriteLine("\nConta não encontrada"); }
+                        Console.ReadLine();
+                    }
+                    if (sel == "2")
+                    {
+                        Console.WriteLine("\n----------------------------------");
+                        Console.Write("\nInsira nome: ");
+                        string name = Console.ReadLine(), nomeAtual = null;
+                        int index = -1;
+                        for (int i = 0; i < contaPoupanca.Count; i++)
+                        {
+                            if (contaPoupanca[i].name == name)
+                            {
+                                nomeAtual = name;
+                                index = i;
+                            }
+                        }
+                        if (index != -1)
+                        {
+                            Console.Write("Valor à transferir: ");
+                            double transferencia = double.Parse(Console.ReadLine());
+                            bool ok = contaPoupanca[index].Sacar(transferencia);
+                            if (ok)
+                            {
+                                string nome = contaPoupanca[index].name;
+                                DateTime data = DateTime.Now;
+                                data.ToShortDateString();
+                                transfereciaContaPoupanca.Add(new Transacoes(nome, transferencia, data));               
+                                if (contaPoupanca[index].saldo == 0)
+                                {
+                                    contaPoupanca[index] = null;
+                                    Console.WriteLine("\nConta fechada");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("\n----------------------------------");
+                                    Console.Write("\n1. Transferencia para Conta Corrente\n2. Transferencia para Conta Poupanca\n3. Transferencia para Conta Investimento\n\nSelecione uma opção: ");
+                                    string se = Console.ReadLine();
+                                    if (se == "1")
+                                    {
+                                        Console.WriteLine("\n----------------------------------");
+                                        Console.Write("\nInsira nome: ");
+                                        string destinatario = Console.ReadLine(), nomeDestinatario = null;
+                                        int indexDestinatario = -1;
+                                        for (int i = 0; i < contaCorrente.Count; i++)
+                                        {
+                                            if (contaCorrente[i].name == name)
+                                            {
+                                                Console.WriteLine("\nTransferencia invalida");
+                                            }
+                                            else if (contaCorrente[i].name == destinatario)
+                                            {
+                                                nomeDestinatario = destinatario;
+                                                indexDestinatario = i;
+                                            }
+                                        }
+                                        if (index != -1)
+                                        {
+                                            contaCorrente[indexDestinatario].Depositar(transferencia);
+                                            Console.WriteLine("\nValor transferido com sucesso");
+                                        }
+                                        else { Console.WriteLine("\nConta não encontrada"); }
+                                        Console.ReadLine();
+                                    }
+                                    else if (se == "2")
+                                    {
+                                        Console.WriteLine("\n----------------------------------");
+                                        Console.Write("\nInsira nome: ");
+                                        string destinatario = Console.ReadLine(), nomeDestinatario = null;
+                                        int indexDestinatario = -1;
+                                        for (int i = 0; i < contaPoupanca.Count; i++)
+                                        {
+                                            if (contaPoupanca[i].name == name)
+                                            {
+                                                Console.WriteLine("\nTransferencia invalida");
+                                            }
+                                            else if (contaPoupanca[i].name == destinatario)
+                                            {
+                                                nomeDestinatario = destinatario;
+                                                indexDestinatario = i;
+                                            }
+                                        }
+                                        if (index != -1)
+                                        {
+                                            contaPoupanca[indexDestinatario].Depositar(transferencia);
+                                            Console.WriteLine("\nValor transferido com sucesso");
+                                        }
+                                        else { Console.WriteLine("\nConta não encontrada"); }
+                                        Console.ReadLine();
+                                    }
+                                    else if (se == "3")
+                                    {
+                                        Console.WriteLine("\n----------------------------------");
+                                        Console.Write("\nInsira nome: ");
+                                        string destinatario = Console.ReadLine(), nomeDestinatario = null;
+                                        int indexDestinatario = -1;
+                                        for (int i = 0; i < contaInvestimento.Count; i++)
+                                        {
+                                            if (contaInvestimento[i].name == name)
+                                            {
+                                                Console.WriteLine("\nTransferencia invalida");
+                                            }
+                                            else if (contaInvestimento[i].name == destinatario)
+                                            {
+                                                nomeDestinatario = destinatario;
+                                                indexDestinatario = i;
+                                            }
+                                        }
+                                        if (index != -1)
+                                        {
+                                            contaInvestimento[indexDestinatario].Depositar(transferencia);
+                                            Console.WriteLine("\nValor transferido com sucesso");
+                                        }
+                                        else { Console.WriteLine("\nConta não encontrada"); }
+                                        Console.ReadLine();
+                                    }
+                                }
+                            }
+                            else { Console.WriteLine("\nSaldo insuficiente"); }
+                        }
+                        else { Console.WriteLine("\nConta não encontrada"); }
+                        Console.ReadLine();
+                    }
+                    if (sel == "3")
+                    {
+                        Console.WriteLine("\n----------------------------------");
+                        Console.Write("\nInsira nome: ");
+                        string name = Console.ReadLine(), nomeAtual = null;
+                        int index = -1;
+                        for (int i = 0; i < contaInvestimento.Count; i++)
+                        {
+                            if (contaInvestimento[i].name == name)
+                            {
+                                nomeAtual = name;
+                                index = i;
+                            }
+                        }
+                        if (index != -1)
+                        {
+                            Console.Write("Valor à transferir: ");
+                            double transferencia = double.Parse(Console.ReadLine());
+                            bool ok = contaInvestimento[index].Sacar(transferencia);
+                            if (ok)
+                            {
+                                string nome = contaInvestimento[index].name;
+                                DateTime data = DateTime.Now;
+                                data.ToShortDateString();
+                                transfereciaContaInvestimento.Add(new Transacoes(nome, transferencia, data));
+                                if (contaInvestimento[index].saldo == 0)
+                                {
+                                    contaInvestimento[index] = null;
+                                    Console.WriteLine("\nConta fechada");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("\n----------------------------------");
+                                    Console.Write("\n1. Transferencia para Conta Corrente\n2. Transferencia para Conta Poupanca\n3. Transferencia para Conta Investimento\n\nSelecione uma opção: ");
+                                    string se = Console.ReadLine();
+                                    if (se == "1")
+                                    {
+                                        Console.WriteLine("\n----------------------------------");
+                                        Console.Write("\nInsira nome: ");
+                                        string destinatario = Console.ReadLine(), nomeDestinatario = null;
+                                        int indexDestinatario = -1;
+                                        for (int i = 0; i < contaCorrente.Count; i++)
+                                        {
+                                            if (contaCorrente[i].name == name)
+                                            {
+                                                Console.WriteLine("\nTransferencia invalida");
+                                            }
+                                            else if (contaCorrente[i].name == destinatario)
+                                            {
+                                                nomeDestinatario = destinatario;
+                                                indexDestinatario = i;
+                                            }
+                                        }
+                                        if (index != -1)
+                                        {
+                                            contaCorrente[indexDestinatario].Depositar(transferencia);
+                                            Console.WriteLine("\nValor transferido com sucesso");
+                                        }
+                                        else { Console.WriteLine("\nConta não encontrada"); }
+                                        Console.ReadLine();
+                                    }
+                                    else if (se == "2")
+                                    {
+                                        Console.WriteLine("\n----------------------------------");
+                                        Console.Write("\nInsira nome: ");
+                                        string destinatario = Console.ReadLine(), nomeDestinatario = null;
+                                        int indexDestinatario = -1;
+                                        for (int i = 0; i < contaPoupanca.Count; i++)
+                                        {
+                                            if (contaPoupanca[i].name == name)
+                                            {
+                                                Console.WriteLine("\nTransferencia invalida");
+                                            }
+                                            else if (contaPoupanca[i].name == destinatario)
+                                            {
+                                                nomeDestinatario = destinatario;
+                                                indexDestinatario = i;
+                                            }
+                                        }
+
+                                        if (index != -1)
+                                        {
+                                            contaPoupanca[indexDestinatario].Depositar(transferencia);
+                                            Console.WriteLine("\nValor transferido com sucesso");
+                                        }
+                                        else { Console.WriteLine("\nConta não encontrada"); }
+                                        Console.ReadLine();
+                                    }
+                                    else if (se == "3")
+                                    {
+                                        Console.WriteLine("\n----------------------------------");
+                                        Console.Write("\nInsira nome: ");
+                                        string destinatario = Console.ReadLine(), nomeDestinatario = null;
+                                        int indexDestinatario = -1;
+                                        for (int i = 0; i < contaInvestimento.Count; i++)
+                                        {
+                                            if (contaInvestimento[i].name == name)
+                                            {
+                                                Console.WriteLine("\nTransferencia invalida");
+                                            }
+                                            else if (contaInvestimento[i].name == destinatario)
+                                            {
+                                                nomeDestinatario = destinatario;
+                                                indexDestinatario = i;
+                                            }
+                                        }
+                                        if (index != -1)
+                                        {      
+                                            contaInvestimento[indexDestinatario].Depositar(transferencia);
+                                            Console.WriteLine("\nValor transferido com sucesso");
+                                        }
+                                        else { Console.WriteLine("\nConta não encontrada"); }
+                                        Console.ReadLine();
+                                    }
+                                }
+                            }
+                            else { Console.WriteLine("\nSaldo insuficiente"); }
+                        }
+                        else { Console.WriteLine("\nConta não encontrada"); }
+                        Console.ReadLine();
+                    }
+                }
+
+                else if (opcao == "9")
                 {
                     break;
                 }
@@ -469,9 +853,3 @@ class Program
         }
     }
 }
-
-
-
-
-
-

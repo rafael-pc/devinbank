@@ -1,5 +1,4 @@
-﻿
-namespace Devinbank.Contas.Entidades
+﻿namespace Devinbank.Contas.Entidades
 {
     public class Conta
     {
@@ -23,7 +22,7 @@ namespace Devinbank.Contas.Entidades
             this.rendaMensal = rendaMensal;            
             saldo += primeiroDeposito;
         }
-   
+
         public Conta(string nome, double transacao)
         {
             name = nome;
